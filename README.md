@@ -107,8 +107,40 @@ Endpoint yang dipakai:
 > Catatan: peta rute & halte (`index.html` yang sudah Anda buat, dengan data `STOP_ORIENTATION`/`DISPLAY_NAMES`)
 > bisa jadi lapisan visualisasi tambahan di `/admin` selanjutnya — upload file itu kalau mau kita satukan.
 
+## Visualisasi rute di peta (`/admin` -> tombol "Peta")
+
+Setiap baris di dashboard admin punya tombol **Peta** yang membuka modal berisi peta rute
+(`public/map/index.html` — file peta MapLibre yang sudah Anda buat, disalin apa adanya) dan
+menggambar perjalanan responden tersebut: board -> (transfer) -> alight, persis seperti fitur
+"Plan a trip" di peta itu, tapi digambar dari jawaban survei, bukan hasil pathfinding.
+
+Cara kerjanya: `TripMapModal` memuat peta dalam `<iframe>`, menunggu event `cartography:ready`
+(sudah ada di file peta Anda, awalnya untuk `cartography.html`), lalu memanggil
+`iframe.contentWindow.renderReportedTrip(legs)` — satu fungsi kecil yang saya tambahkan di akhir
+script peta, yang memakai ulang fungsi-fungsi yang sudah ada di sana (`getRouteSegment`,
+`setPlannedRoute`, `renderPlanMarkers`, dst). Nama halte dari survei (versi "cantik", mis.
+"Ambarukmo (Selatan Jalan)") dikonversi balik ke nama asli stops.json (mis. "Ambarukmo - A")
+lewat tabel yang sudah ada di `src/data/routes.js`.
+
+**Status data saat ini:**
+
+- `public/map/routes/` sudah berisi 11 rute: `1A, 1B, 2A, 2B, 3A, 3B, 4A, 4B, 5A, 5B, 6` — format file Anda cocok
+  persis dengan yang dibaca `loadRoutes()` (envelope `{license, description, ..., data: {type, features,
+  coordinates, stops, loop}}`), jadi tidak ada konversi yang diperlukan, tinggal ditambah rute sisanya
+  begitu Anda selesai format.
+- `public/map/stops/stops.json` **sementara di-generate otomatis** dari koordinat vertex yang sudah
+  tertanam di 11 file rute itu sendiri (setiap rute punya `stops: [{name, vertex}]`, koordinatnya diambil
+  dari `coordinates[vertex]`). Hasilnya 290 halte, dan nama-namanya sudah dicek cocok 100% dengan tabel
+  `raw` di `src/data/routes.js`. Ini cukup untuk membuat peta & visualisasi rute berfungsi sekarang, tapi
+  kalau Anda punya `stops.json` "asli" dari sumber lain (dengan `is_departure_hub`/`destinations` yang
+  akurat, dipakai fitur "Show final destination" di peta), boleh timpa file ini kapan saja.
+- Begitu rute sisanya (`8, 9, 10, 11, 12, 13, 14, 15, L1`, dst) selesai diformat, tinggal drop ke
+  `public/map/routes/<ID>.json` — tidak perlu ubah kode. `stops.json` juga sebaiknya di-generate ulang
+  saat itu (atau saya bantu regenerate) supaya halte-halte rute baru ikut masuk.
+
 ## Rencana selanjutnya
 
-- Visualisasi peta di dashboard admin (pakai `index.html` peta rute/halte yang sudah ada).
+- Tambahkan sisa rute (`8, 9, 10, 11, 12, 13, 14, 15, L1`, dst.) ke `public/map/routes/` begitu selesai diformat.
+- Timpa `stops.json` dengan versi "asli" (destinations/departure hub akurat) kalau tersedia.
 - Partial-save / resume progres (localStorage) antar sesi.
 - Logo hitam untuk konteks background terang (baru ada versi putih; komponen `TfYLogo` sudah mendukung prop `color` untuk varian lain).

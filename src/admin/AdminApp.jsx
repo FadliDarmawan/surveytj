@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Download, ChevronDown, ChevronUp, LogOut, RefreshCw, Lock } from "lucide-react";
+import { Download, ChevronDown, ChevronUp, LogOut, RefreshCw, Lock, MapPin } from "lucide-react";
 import { C, display, body } from "../theme";
+import TripMapModal from "./TripMapModal";
 
 const PAGE_SIZE = 50;
 
@@ -111,6 +112,7 @@ function Dashboard({ creds, onLogout }) {
   const [error, setError] = useState("");
   const [exporting, setExporting] = useState(false);
   const [expanded, setExpanded] = useState(null);
+  const [mapRow, setMapRow] = useState(null);
 
   async function loadPage(p) {
     setLoading(true);
@@ -231,13 +233,23 @@ function Dashboard({ creds, onLogout }) {
                     <td className="px-3 py-2.5 whitespace-nowrap"><SatisfactionMini s={r.satisfaction} /></td>
                     <td className="px-3 py-2.5 whitespace-nowrap">{r.instagram || "-"}</td>
                     <td className="px-3 py-2.5 whitespace-nowrap">
-                      <button
-                        onClick={() => setExpanded(expanded === r.id ? null : r.id)}
-                        style={{ color: C.navy }}
-                        className="inline-flex items-center gap-1 font-medium"
-                      >
-                        Detail {expanded === r.id ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-                      </button>
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          onClick={() => setMapRow(r)}
+                          style={{ color: C.teal }}
+                          className="inline-flex items-center gap-1 font-medium"
+                          title="Buka visualisasi rute di peta"
+                        >
+                          <MapPin size={12} /> Peta
+                        </button>
+                        <button
+                          onClick={() => setExpanded(expanded === r.id ? null : r.id)}
+                          style={{ color: C.navy }}
+                          className="inline-flex items-center gap-1 font-medium"
+                        >
+                          Detail {expanded === r.id ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   {expanded === r.id && <RowDetail key={`${r.id}-detail`} row={r} />}
@@ -272,6 +284,8 @@ function Dashboard({ creds, onLogout }) {
           </div>
         )}
       </div>
+
+      {mapRow && <TripMapModal row={mapRow} onClose={() => setMapRow(null)} />}
     </div>
   );
 }
