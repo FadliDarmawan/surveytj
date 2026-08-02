@@ -60,6 +60,40 @@ export default function SurveiTransJogja() {
   const [proposedRoute, setProposedRoute] = useState("");
   const [otherFeedback, setOtherFeedback] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  async function handleSubmit() {
+    if (!isAssessmentValid || submitting) return;
+    setSubmitting(true);
+    setSubmitError("");
+
+    const payload = {
+      sessionId: sessionId.current,
+      ageGroup, kecamatan, occupation, instagram,
+      origin, originWilayah, accessMode, accessDuration, legs,
+      egressMode, egressDuration, destination, destWilayah, selfReportedTotal,
+      reasons, painPoints, priorities, satisfaction,
+      wouldUseDirect, wouldUseFeeder, proposedRoute, otherFeedback,
+    };
+
+    try {
+      const res = await fetch("/api/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Gagal mengirim survei.");
+
+      setSubmitted(true);
+      setStep(4);
+    } catch (err) {
+      setSubmitError(err.message || "Terjadi kesalahan jaringan. Silakan coba lagi.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   function toggleMulti(list, setList, item, max = 3) {
     if (list.includes(item)) { setList(list.filter(x => x !== item)); return; }
@@ -496,15 +530,18 @@ export default function SurveiTransJogja() {
               </button>
               <div className="flex flex-col items-end gap-2">
                 <button
-                  onClick={() => { if (isAssessmentValid) { setSubmitted(true); setStep(4); } }}
-                  disabled={!isAssessmentValid}
-                  style={{ background: isAssessmentValid ? C.amber : "#C7CDD1", color: isAssessmentValid ? C.navyDeep : "#fff", cursor: isAssessmentValid ? "pointer" : "not-allowed" }}
+                  onClick={handleSubmit}
+                  disabled={!isAssessmentValid || submitting}
+                  style={{ background: isAssessmentValid ? C.amber : "#C7CDD1", color: isAssessmentValid ? C.navyDeep : "#fff", cursor: isAssessmentValid && !submitting ? "pointer" : "not-allowed", opacity: submitting ? 0.7 : 1 }}
                   className="px-5 py-2.5 rounded-xl font-semibold text-sm inline-flex items-center gap-2"
                 >
-                  Kirim Survei <ArrowRight size={15} />
+                  {submitting ? "Mengirim..." : "Kirim Survei"} {!submitting && <ArrowRight size={15} />}
                 </button>
                 {!isAssessmentValid && (
                   <p style={{ ...body, color: "#D63384" }} className="text-xs text-right max-w-[220px]">Lengkapi semua pertanyaan bertanda * sebelum mengirim.</p>
+                )}
+                {submitError && (
+                  <p style={{ ...body, color: "#D63384" }} className="text-xs text-right max-w-[240px]">{submitError}</p>
                 )}
               </div>
             </div>
