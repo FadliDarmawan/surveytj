@@ -772,7 +772,6 @@
   }
   #mobile-sheet-header { flex: none; padding: 0 20px 14px; position: relative; }
   #mobile-sheet-title {
-    display: none; /* branding hidden per request -- rest of the header/search/planner untouched */
     font-family: "Plus Jakarta Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
     font-size: 23px; font-weight: 800; color: #F2B705; letter-spacing: -0.01em;
   }
@@ -930,6 +929,14 @@
      every bit of the normal app chrome down to just the bare map + any
      destination labels, since cartography.html builds its own controls
      for everything a person would need instead. */
+  /* ---- Trip embed mode (see TRIP_EMBED in the script) ----
+     Loaded inside the admin dashboard's "Visualisasi rute" iframe with
+     ?embed=1: same bare-map chrome-stripping as cartography-embed above,
+     but deliberately does NOT run applyCartographyMapStyle() -- that
+     function turns direction arrows off on purpose (see its own
+     comment), which is exactly what the admin view needs ON. Kept as a
+     separate mode/class instead of reusing cartography-embed so the two
+     don't end up fighting over what "embedded" should look like. */
   body.cartography-embed #route-rail,
   body.cartography-embed #search-wrap,
   body.cartography-embed #mobile-sheet,
@@ -937,7 +944,14 @@
   body.cartography-embed #route-topbar,
   body.cartography-embed #route-detail-panel,
   body.cartography-embed #stop-info-panel,
-  body.cartography-embed .maplibregl-ctrl-top-right {
+  body.cartography-embed .maplibregl-ctrl-top-right,
+  body.trip-embed #route-rail,
+  body.trip-embed #search-wrap,
+  body.trip-embed #mobile-sheet,
+  body.trip-embed #keybanner,
+  body.trip-embed #route-topbar,
+  body.trip-embed #route-detail-panel,
+  body.trip-embed #stop-info-panel {
     display: none !important;
   }
   /* Destination pills stay non-interactive by default (same as the main
@@ -2517,6 +2531,12 @@ const routesPromise = loadRoutes();
 // preserveDrawingBuffer is only worth the extra memory/perf cost there,
 // where the canvas needs to survive being captured for print/export.
 const CARTOGRAPHY_EMBED = new URLSearchParams(location.search).get("cartography") === "1";
+// Admin dashboard's "Visualisasi rute" iframe (see window.renderReportedTrip
+// near the end of this script, and TripMapModal.jsx on the admin side):
+// strips the same UI chrome as cartography-embed but deliberately leaves
+// the rest of the app's normal styling (and direction arrows) alone.
+const TRIP_EMBED = new URLSearchParams(location.search).get("embed") === "1";
+if (TRIP_EMBED) document.body.classList.add("trip-embed");
 // The normal app eases fitBounds over half a second so panning/zooming
 // reads as a smooth camera move. In the editor that's actively harmful:
 // cartography.html calls fitBounds again every time the page size,
@@ -5656,8 +5676,18 @@ document.getElementById("planner-find").addEventListener("click", () => {
 // findStopPath/buildItinerary.
 window.renderReportedTrip = function (legsInput) {
   resetPlannerHighlight();
+  setBeforeSegment(null);
 
+  // IMPORTANT: drawn via the "active-segment" source/layers, NOT
+  // "planned-route" -- planned-route (used by the "Plan a trip" panel)
+  // was never given its own direction-arrow layer, only a glow+line. The
+  // arrow layer that already exists (active-segment-arrows, same one
+  // "Show final destination" uses) is unfiltered and just follows
+  // whatever's currently in the active-segment source, so feeding our
+  // legs through setActiveSegment is what actually makes arrow.svg show
+  // up on this trip -- not an extra layer of our own.
   const legs = [];
+  const activeSegments = [];
   (legsInput || []).forEach(l => {
     if (!l || !l.routeId || !l.from || !l.to) return;
     const junction = getJunctionSegments(l.routeId, l.from, l.to);
@@ -5666,15 +5696,20 @@ window.renderReportedTrip = function (legsInput) {
       console.warn("renderReportedTrip: tidak bisa menggambar leg", l);
       return;
     }
+    const color = (ROUTE_META[l.routeId] || {}).color || "#1c1c1a";
     legs.push({ routeId: l.routeId, from: l.from, to: l.to, coords });
+    activeSegments.push({ coords, color });
   });
 
   if (!legs.length) return false;
 
-  setPlannedRoute(legs);
+  setActiveSegment(activeSegments);
   renderPlanMarkers(legs);
-  setRouteDimming(true);
   setRouteArrows(null);
+  // Same treatment as showFinalDestinationsForStop: the active-segment
+  // overlay above IS the whole picture now, so hide every base route
+  // line outright rather than just greying the unrelated ones out.
+  map.setPaintProperty("route-line", "line-opacity", 0);
   setStopsFilter([...new Set(legs.map(l => l.routeId))]);
 
   const allCoords = legs.flatMap(l => l.coords);
@@ -5686,7 +5721,11 @@ window.renderReportedTrip = function (legsInput) {
   return true;
 };
 
-window.clearReportedTrip = function () { resetPlannerHighlight(); };
+window.clearReportedTrip = function () {
+  resetPlannerHighlight();
+  setActiveSegment(null);
+  setBeforeSegment(null);
+};
 
 // (cartography.html) in a new tab. Global shortcut, not scoped to any one
 // panel -- pressing it while the "Stop information" / "Show final

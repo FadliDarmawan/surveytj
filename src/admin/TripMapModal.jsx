@@ -99,7 +99,7 @@ export default function TripMapModal({ row, onClose }) {
           <iframe
             ref={iframeRef}
             title="Peta rute Trans Jogja"
-            src="/map/index.html"
+            src="/map/index.html?embed=1"
             className="w-full h-full border-0"
           />
         </div>
