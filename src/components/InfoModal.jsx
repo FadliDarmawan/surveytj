@@ -1,5 +1,6 @@
 import { X, Instagram, Twitter } from "lucide-react";
 import { C, display, body } from "../theme";
+import TfYLogo from "./TfYLogo";
 
 export default function InfoModal({ topic, onClose }) {
   if (!topic) return null;
@@ -17,6 +18,7 @@ export default function InfoModal({ topic, onClose }) {
         style={{ ...body }}
         className="bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto p-6"
       >
+        <TfYLogo color={C.ink} className="h-6 w-auto mb-4" />
         <div className="flex items-center justify-between mb-4">
           <h3 style={{ ...display, color: C.ink }} className="text-lg font-semibold">{titles[topic]}</h3>
           <button onClick={onClose} style={{ color: C.inkMuted }} aria-label="Tutup"><X size={20} /></button>

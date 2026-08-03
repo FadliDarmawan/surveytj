@@ -182,14 +182,9 @@ export default function SurveiTransJogja() {
         <div className="flex items-center gap-3">
           <TfYLogo color="#fff" className="h-5 w-auto shrink-0" />
           <div style={{ background: "rgba(255,255,255,0.2)" }} className="w-px h-6 shrink-0" />
-          <div className="flex items-center gap-2.5">
-            <div style={{ background: C.amber }} className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0">
-              <Bus size={17} color={C.navyDeep} />
-            </div>
-            <div>
-              <p style={{ ...display, color: "#fff" }} className="text-sm font-semibold leading-none">Survei Rute Trans Jogja</p>
-              <p style={{ color: "#9FB4C6" }} className="text-[11px] mt-1">oleh Transport for Yogyakarta</p>
-            </div>
+          <div>
+            <p style={{ ...display, color: "#fff" }} className="text-sm font-semibold leading-none">Survei Rute Trans Jogja</p>
+            <p style={{ color: "#9FB4C6" }} className="text-[11px] mt-1">oleh Transport for Yogyakarta</p>
           </div>
         </div>
         <Pill tone="amber"><RefreshCw size={11} /> {sessionId.current}</Pill>
