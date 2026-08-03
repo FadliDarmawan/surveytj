@@ -25,32 +25,47 @@ export default function InfoModal({ topic, onClose }) {
         {topic === "about" && (
           <div style={{ color: C.ink }} className="text-sm leading-relaxed space-y-3">
             <p>
-              <em style={{ color: C.inkMuted }}>[Placeholder — ganti dengan deskripsi resmi]</em> Survei ini
-              diselenggarakan oleh <b>Transport for Yogyakarta (TfY)</b>, sebuah [placeholder: komunitas/inisiatif
-              warga] yang mendorong perbaikan transportasi publik di Daerah Istimewa Yogyakarta.
+              Survei ini diselenggarakan oleh <b>Komunitas Transport for Yogyakarta</b>, sebuah komunitas
+              pemerhati dan pegiat transportasi umum yang mendorong perbaikan transportasi publik di Daerah
+              Istimewa Yogyakarta.
             </p>
             <p>
-              Tujuan survei ini adalah memahami pola perjalanan pengguna Trans Jogja — halte yang dipakai, rute
-              yang ditempuh, kendala yang dirasakan, dan preferensi pengembangan jaringan — untuk mendukung usulan
-              redesain rute dan halte yang lebih sesuai kebutuhan warga.
+              Tujuan dari survei ini adalah memahami pola perjalanan pengguna Trans Jogja, meliputi halte yang
+              dipakai, rute yang digunakan, kendala yang dirasakan, serta preferensi pengembangan jaringan untuk
+              mendukung usulan rerouting dan redesign rute dan halte yang sesuai pola dan kebutuhan masyarakat.
             </p>
-            <p style={{ color: C.inkMuted }} className="text-xs">
-              [Placeholder: tambahkan tautan ke laporan/publikasi hasil survei bila sudah tersedia]
+            <p>
+              Terima kasih telah ikut berpartisipasi dalam mengisi survei. Kami akan dengan senang hati
+              membagikan hasil usulan kami berdasarkan data survei yang kami himpun.
             </p>
+            <button
+              disabled
+              style={{ borderColor: C.border, color: C.inkMuted }}
+              className="w-full border rounded-xl px-4 py-3 text-sm font-medium text-left flex items-center justify-between cursor-not-allowed"
+            >
+              Unduh usulan rute TfY
+              <span style={{ background: C.bg, color: C.inkMuted }} className="text-xs px-2 py-1 rounded-lg">Coming soon</span>
+            </button>
           </div>
         )}
 
         {topic === "privacy" && (
           <div style={{ color: C.ink }} className="text-sm leading-relaxed space-y-3">
-            <p style={{ color: C.inkMuted }} className="text-xs italic">[Placeholder — tinjau kembali sebelum publikasi]</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li>Survei ini tidak meminta nama asli responden. Identitas Anda tetap anonim.</li>
-              <li>Nama pengguna Instagram bersifat opsional, hanya digunakan untuk keperluan undian hadiah, dan disimpan terpisah dari data perjalanan.</li>
-              <li>Data lokasi (asal/tujuan) disimpan pada tingkat kelurahan/kecamatan, bukan alamat persis.</li>
-              <li>Seluruh data hanya digunakan untuk keperluan penelitian dan disajikan dalam bentuk agregat, tidak akan mengungkap identitas responden secara individual.</li>
-              <li>Data tidak dibagikan ke pihak ketiga di luar keperluan penelitian ini.</li>
-              <li>Anda dapat menghubungi kami melalui menu "Hubungi Kami" apabila ingin meminta penghapusan data yang sudah dikirim.</li>
+              <li>Survei ini tidak membutuhkan nama asli responden. Identitas Anda tetap anonim.</li>
+              <li>Nama pengguna Instagram bersifat opsional, hanya digunakan untuk keperluan undian hadiah dan disimpan terpisah dari data survei.</li>
+              <li>Data lokasi asal dan tujuan disimpan pada tingkat Kal/Kelurahan, bukan merupakan alamat persis.</li>
+              <li>Seluruh data hanya digunakan untuk keperluan penelitian dan disajikan dalam bentuk agregat. Kami tidak akan mengungkap identitas responden secara individual.</li>
+              <li>Data tidak dibagikan ke pihak ketiga di luar keperluan penelitian.</li>
             </ul>
+            <p style={{ background: "#FFF6E5", borderColor: "#F2B705", color: C.ink }} className="border rounded-xl px-3.5 py-3 text-xs leading-relaxed">
+              <b>PENTING:</b> Kami akan membagikan data kepada instansi terkait selaku regulator dan operator
+              Trans Jogja untuk evaluasi.
+            </p>
+            <p className="text-sm">
+              Anda dapat menghubungi kami melalui menu &ldquo;Hubungi Kami&rdquo; apabila ingin meminta
+              penghapusan data yang sudah dikirim.
+            </p>
           </div>
         )}
 

@@ -568,18 +568,23 @@ export default function SurveiTransJogja() {
       </div>
 
       {/* footer menu — selalu tampil di semua langkah */}
-      <div style={{ borderColor: C.border, ...body }} className="border-t px-5 sm:px-8 py-4 flex items-center justify-center gap-x-4 gap-y-1 flex-wrap text-xs">
-        <button onClick={() => setModal("about")} style={{ color: C.inkMuted }} className="inline-flex items-center gap-1.5 hover:underline">
-          <Info size={12} /> Tentang
-        </button>
-        <span style={{ color: C.border }}>·</span>
-        <button onClick={() => setModal("privacy")} style={{ color: C.inkMuted }} className="inline-flex items-center gap-1.5 hover:underline">
-          <ShieldCheck size={12} /> Kebijakan Privasi
-        </button>
-        <span style={{ color: C.border }}>·</span>
-        <button onClick={() => setModal("contact")} style={{ color: C.inkMuted }} className="inline-flex items-center gap-1.5 hover:underline">
-          <Mail size={12} /> Hubungi Kami
-        </button>
+      <div style={{ borderColor: C.border, ...body }} className="border-t px-5 sm:px-8 py-4 flex flex-col items-center gap-2 text-xs">
+        <div className="flex items-center justify-center gap-x-4 gap-y-1 flex-wrap">
+          <button onClick={() => setModal("about")} style={{ color: C.inkMuted }} className="inline-flex items-center gap-1.5 hover:underline">
+            <Info size={12} /> Tentang
+          </button>
+          <span style={{ color: C.border }}>·</span>
+          <button onClick={() => setModal("privacy")} style={{ color: C.inkMuted }} className="inline-flex items-center gap-1.5 hover:underline">
+            <ShieldCheck size={12} /> Kebijakan Privasi
+          </button>
+          <span style={{ color: C.border }}>·</span>
+          <button onClick={() => setModal("contact")} style={{ color: C.inkMuted }} className="inline-flex items-center gap-1.5 hover:underline">
+            <Mail size={12} /> Hubungi Kami
+          </button>
+        </div>
+        <p style={{ color: C.inkMuted }} className="text-[11px]">
+          Situs ini dikembangkan oleh Fadli Darmawan untuk kepentingan Transport for Yogyakarta. All rights reserved.
+        </p>
       </div>
 
       <InfoModal topic={modal} onClose={() => setModal(null)} />
